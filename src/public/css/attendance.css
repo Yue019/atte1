@@ -1,0 +1,40 @@
+.date-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    margin-bottom: 2%;
+}
+
+.arrow-button {
+    color: #1e90ff;
+    border: 1px solid #1e90ff;
+    background-color: white;
+    margin: 0 5px;
+}
+
+.header__text {
+    margin: 0 10px;
+}
+
+.table__wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 80%;
+    margin: auto;
+}
+
+.attendance__table {
+    width: 80%;
+    margin: auto;
+}
+
+.table__header,
+.table__item {
+    width: 20%;
+    text-align: left;
+    padding-left: 5%;
+    height: 70px;
+    border-top: 1px solid gray;
+}

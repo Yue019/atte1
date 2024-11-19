@@ -1,0 +1,58 @@
+.login__content {
+    margin: 0 auto;
+    padding: 30px 15px;
+    max-width: 1230px;
+    background-color: #fafad2;
+}
+
+.login-form__heading {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form {
+    margin: 0 auto;
+    width: 30%;
+    text-align: center;
+}
+
+.form__group {
+    margin-bottom: 10px;
+}
+
+.form__item input {
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 80%;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+
+    appearance: none;
+}
+
+.form__button-submit {
+    padding: 10px;
+    margin-top: 10px;
+    width: 80%;
+    height: 40px;
+    border: none;
+    border-radius: 3px;
+    background: blue;
+    color: #fff;
+    cursor: pointer;
+}
+
+.register__link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.register__item-text {
+    color: gray;
+    font-size: small;
+}
+
+.register__link-text {
+    color: blue;
+}
