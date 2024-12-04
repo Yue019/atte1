@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Work;
 use App\Models\Rest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class WorkController extends Controller
@@ -39,75 +40,42 @@ class WorkController extends Controller
       'start_work' => $startWork,
       'end_work' => null,//終了時刻は未定義
       ]);
+
+    //勤務状態を "on" に変更
+      $user = Auth::user();
+      $user->save();
         return redirect()->route('home')->with('success','出勤しました。');
     }
 
 
   //退勤の処理
-    public function endWork(Request $request)
-    {
-      $today = Carbon::today();
-      $now = Carbon::now(); // 現在の時刻を取得
+  public function endWork(Request $request)
+  {
+    $user = auth()->user();
 
-    // もし現在が0時を過ぎている場合（前日を終了させる）
-      if ($now->hour == 0 || $now->hour > 0) {
-      $yesterday = $now->copy()->subDay();  // 前日の日付を取得
-
-    // 前日の終了時間を 23:59:59 に設定
-      $endWork = Carbon::createFromFormat('Y-m-d H:i:s', $yesterday->format('Y-m-d') . ' 23:59:59');
-
-    // 前日の勤務記録を更新
-      $work = Work::where('date', $yesterday->format('Y-m-d'))
-      ->whereNull('end_work') // まだ退勤していないレコード
+    $work = Work::where('user_id',auth()->id())
+      ->whereNull('end_work')
       ->first();
 
-      if ($work) {
-      // 終了時間を 23:59:59 に設定
-      $work->end_work = $endWork;
-      $work->save();
-
-    // 勤務時間と休憩時間を計算
-      list($totalRestHMS, $workTimeHMS) = $this->calculateWorkTime($work);
-
-    //勤務テーブルに保存
-      $work->total_rest = $totalRestHMS;  //休憩時間を保存
-      $work->working_hours = $workTimeHMS;  //実働時間を保存
-      $work->save();
-      }
-
-    //新しいレコードを作成
-      $newWork = Work::create([
-      'user_id' => Auth::id(),
-      'date' => $today->format('Y-m-d'),
-      'start_work' => Carbon::createFromTime(00, 00, 00), //翌日の開始時刻
-      'end_work' => null,
-      ]);
-    // 新しい勤務レコードを保存後、現在時刻を退勤時刻として設定
-      $newWork->end_work = $now;  // 現在時刻を退勤時刻として設定
-      $newWork->save();
-
-        return redirect()->route('home')->with('success', 'お疲れさまでした。');
+    if (!$work) {
+        return redirect()->route('home')->with('error', '勤務レコードが見つかりません。');
     }
-    else{
-    //24時を跨がない場合の通常勤務の終了処理
-      $work = Work::where('user_id',auth()->id())
-      ->whereNull('end_work') //まだ退勤してないレコードを取得
-      ->first();
-      if($work){
-      $work->end_work = $now; //現在時刻を終了時間に設定
-      $work->save();
 
-    // 勤務時間と休憩時間を計算
-      list($totalRestHMS, $workTimeHMS) = $this->calculateWorkTime($work);
+    $work->end_work = Carbon::now(); // 退勤時間を現在時刻で設定
 
-    //勤務テーブルに保存
-      $work->total_rest = $totalRestHMS;  //休憩時間を保存
-      $work->working_hours = $workTimeHMS;  //実働時間を保存
-      $work->save();
-      }
+   // 勤務時間と休憩時間を計算
+    list($totalRestHMS, $workTimeHMS) = $this->calculateWorkTime($work);
 
-          return redirect()->route('home')->with('success','お疲れさまでした。');
+    if ($totalRestHMS == '00:00:00' || $workTimeHMS == '00:00:00') {
+        return redirect()->route('home')->with('error', '無効な勤務時間または休憩時間です。');
     }
+
+    //休憩時間と実働時間を保存
+    $work->total_rest = $totalRestHMS;  //休憩時間を保存
+    $work->working_hours = $workTimeHMS;  //実働時間を保存
+    $work->save();
+
+      return redirect()->route('home')->with('success','お疲れさまでした。');
   }
 
   /**
@@ -116,15 +84,10 @@ class WorkController extends Controller
    * @return array [休憩時間, 実働時間]
   */
   private function calculateWorkTime($work)
-  {
+    {
     //休憩時間の合計を計算
       $totalRest = Rest::where('work_id',$work->id)
       ->sum('duration');
-
-    // 休憩がない場合、$totalRest を 0 に設定
-      if ($totalRest === null) {
-      $totalRest = 0;
-    }
 
     //勤務終了時間と開始時間の差を計算
       $workingHoursInSeconds = $work->end_work->diffInSeconds($work->start_work);
@@ -137,7 +100,7 @@ class WorkController extends Controller
       $workTimeHMS = $this->formatTime($actualWorkTime);
 
         return [$totalRestHMS, $workTimeHMS];
-  }
+    }
 
   /**
    * 時間をH:M:S形式に変換するメソッド
@@ -145,12 +108,13 @@ class WorkController extends Controller
    * @return string H:M:S 形式の時間
    */
   private function formatTime($totalSeconds)
-  {
+    {
     $hours = floor($totalSeconds / 3600);
     $minutes = floor(($totalSeconds % 3600) / 60);
     $seconds = $totalSeconds % 60;
       return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-  }
+    }
+
 
 
   //休憩開始の処理
