@@ -66,8 +66,13 @@ class WorkController extends Controller
    // 勤務時間と休憩時間を計算
     list($totalRestHMS, $workTimeHMS) = $this->calculateWorkTime($work);
 
-    if ($totalRestHMS == '00:00:00' || $workTimeHMS == '00:00:00') {
-        return redirect()->route('home')->with('error', '無効な勤務時間または休憩時間です。');
+    if ($workTimeHMS == '00:00:00') {
+        return redirect()->route('home')->with('error', '無効な勤務時間です。');
+    }
+
+    // 休憩時間がない場合、デフォルトで '00:00:00' として処理
+    if ($totalRestHMS == '00:00:00') {
+        $totalRestHMS = '00:00:00';  // 休憩時間がゼロならそのまま 00:00:00 と設定
     }
 
     //休憩時間と実働時間を保存
@@ -89,14 +94,16 @@ class WorkController extends Controller
       $totalRest = Rest::where('work_id',$work->id)
       ->sum('duration');
 
+    // 休憩時間がなかった場合でも処理を続ける
+      $totalRestHMS = $this->formatTime($totalRest);
+
     //勤務終了時間と開始時間の差を計算
       $workingHoursInSeconds = $work->end_work->diffInSeconds($work->start_work);
 
     //実働時間の計算
       $actualWorkTime = $workingHoursInSeconds - $totalRest;
 
-    //休憩時間と実働時間をH:M:S形式に変換
-      $totalRestHMS = $this->formatTime($totalRest);
+    //実働時間をH:M:S形式に変換
       $workTimeHMS = $this->formatTime($actualWorkTime);
 
         return [$totalRestHMS, $workTimeHMS];

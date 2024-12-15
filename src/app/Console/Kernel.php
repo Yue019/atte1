@@ -25,10 +25,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // 毎日深夜24時（00:00）にSwitchWorkコマンドを実行
-        $schedule->command('work:switch')->dailyAt('00:00');
+            //$schedule->command('work:switch')->dailyAt('00:00');
     }
     protected function commands()
+
     {
         $this->load(__DIR__.'/Commands');
         require base_path('routes/console.php');

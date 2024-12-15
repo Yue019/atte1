@@ -56,3 +56,7 @@
 .login__link-text {
     color: blue;
 }
+
+.resister_error {
+    color: red;
+}

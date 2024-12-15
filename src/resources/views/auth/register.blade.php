@@ -6,6 +6,16 @@
 @endsection
 
 @section('content')
+@if ($errors->any())
+<div class="resister_error">
+    <ul>
+    @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+    @endforeach
+    </ul>
+</div>
+@endif
+
 <div class="register__content">
     <div class="register-form__heading">
         <h2>会員登録</h2>

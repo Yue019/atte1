@@ -18,4 +18,3 @@ Route::post('/start-rest', [WorkController::class, 'startRest'])->name('start-re
 Route::post('/end-rest', [WorkController::class, 'endRest'])->name('end-rest');
 
 Route::get('/attendance/date', [WorkController::class, 'indexDate'])->name('attendance.date');
-
