@@ -30,13 +30,15 @@
 ![Image](img/Atte-ER.jpg)
 
 ## 環境構築
-☆必要なツール
-* Docker
-* Docker Compose
+* Dockerのインストール
+* Docker Composeのインストール
 * Gitのインストールとリポジトリの準備
+
+https://github.com/Yue019/atte1.git
 * Laravelの依存関係をインストール
 * .envファイルの設定
 * mysqlを以下の設定にする。
+
 DB_CONNECTION=mysql  
 DB_HOST=mysql  
 DB_PORT=3306  
