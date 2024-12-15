@@ -35,7 +35,7 @@
 * Gitのインストールとリポジトリの準備
 
 https://github.com/Yue019/atte1.git
-* Laravelの依存関係をインストール
+* Laravelパッケージをインストール（Composerを使用）
 * .envファイルの設定
 * mysqlを以下の設定にする。
 
@@ -47,7 +47,7 @@ DB_USERNAME=laravel_user
 DB_PASSWORD=laravel_pass  
 
 ## その他
-☆利用者100名のダミーデータを挿入
+☆利用者100名のダミーデータを挿入済み
 
 ☆テストユーザーアカウント
 * 名前:Lazvell
