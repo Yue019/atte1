@@ -6,7 +6,7 @@
 人事評価のため（利用者100名を想定）
 
 ## アプリケーションURL
-* アプリケーション : http://localhost/login
+* アプリケーション : http://localhost
 * Myadmin：http://localhost:8080
 
 ## 機能一覧
